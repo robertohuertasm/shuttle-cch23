@@ -8,3 +8,8 @@ actix-web = "4.3.1"
 shuttle-actix-web = "0.34.0"
 shuttle-runtime = "0.34.0"
 tokio = "1.26.0"
+# tracing
+tracing = "0.1"
+
+[dev-dependencies]
+actix-http = "3.4.0"

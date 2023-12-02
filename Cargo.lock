@@ -444,10 +444,12 @@ dependencies = [
 name = "cch23-robertohuertasm"
 version = "0.1.0"
 dependencies = [
+ "actix-http",
  "actix-web",
  "shuttle-actix-web",
  "shuttle-runtime",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
