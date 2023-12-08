@@ -1,8 +1,8 @@
 mod common;
 
-use actix_web::{test, web, App};
+use actix_web::{test, App};
 use cch23_robertohuertasm::app::{configure_app, ContestResult, Reinder};
-use common::{assert_request, assert_request_post};
+use common::assert_request_post;
 
 fn simple_reinder(name: String, strength: u32) -> Reinder {
     Reinder {

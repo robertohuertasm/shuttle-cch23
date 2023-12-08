@@ -57,21 +57,10 @@ impl ContestResult {
 }
 
 impl Responder for ContestResult {
-    type Body = EitherBody<String>;
-    fn respond_to(self, _: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
-        match serde_json::to_string(&self) {
-            Ok(json) => match HttpResponse::Ok()
-                .content_type("application/json")
-                .message_body(json)
-            {
-                Ok(res) => res.map_into_left_body(),
-                Err(err) => HttpResponse::from_error(err).map_into_right_body(),
-            },
+    type Body = <Json<Self> as Responder>::Body;
 
-            Err(err) => {
-                HttpResponse::from_error(JsonPayloadError::Serialize(err)).map_into_right_body()
-            }
-        }
+    fn respond_to(self, req: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
+        Json(self).respond_to(req)
     }
 }
 
