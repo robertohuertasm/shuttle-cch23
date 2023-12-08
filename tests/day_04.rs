@@ -33,7 +33,7 @@ async fn strength_works() {
 }
 
 #[actix_web::test]
-async fn contest_works() {
+async fn integration_day_04_contest_works() {
     let app = App::new().configure(configure_app);
     let service = test::init_service(app).await;
 

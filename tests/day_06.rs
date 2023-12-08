@@ -5,7 +5,7 @@ use cch23_robertohuertasm::app::{configure_app, Day06Result};
 use common::assert_request_post;
 
 #[actix_web::test]
-async fn day06_works() {
+async fn integration_day_06_works() {
     let app = App::new().configure(configure_app);
     let service = test::init_service(app).await;
 
@@ -25,7 +25,7 @@ async fn day06_works() {
 }
 
 #[actix_web::test]
-async fn day06_works_2() {
+async fn integration_day_06_works_2() {
     let app = App::new().configure(configure_app);
     let service = test::init_service(app).await;
 

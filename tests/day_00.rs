@@ -3,7 +3,7 @@ use actix_web::{test, App};
 use cch23_robertohuertasm::app::configure_app;
 
 #[actix_web::test]
-async fn day_00_works() {
+async fn integration_day_00_works() {
     let app = App::new().configure(configure_app);
     let service = test::init_service(app).await;
 

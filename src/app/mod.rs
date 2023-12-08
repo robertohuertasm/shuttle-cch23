@@ -2,9 +2,11 @@ mod day_00;
 mod day_01;
 mod day_04;
 mod day_06;
+mod day_07;
 
 pub use day_04::{ContestResult, Reinder};
 pub use day_06::Day06Result;
+pub use day_07::CookieResponse;
 
 use actix_web::web::{self, ServiceConfig};
 
@@ -19,5 +21,7 @@ pub fn configure_app(cfg: &mut ServiceConfig) {
         .service(web::resource("/1/{all:.*}").route(web::get().to(day_01::day_01)))
         .service(web::resource("/4/strength").route(web::post().to(day_04::strength)))
         .service(web::resource("/4/contest").route(web::post().to(day_04::contest)))
-        .service(web::resource("/6").route(web::post().to(day_06::day_06)));
+        .service(web::resource("/6").route(web::post().to(day_06::day_06)))
+        .service(web::resource("/7/decode").route(web::get().to(day_07::decode)))
+        .service(web::resource("/7/bake").route(web::get().to(day_07::bake)));
 }
