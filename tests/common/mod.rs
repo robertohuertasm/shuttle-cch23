@@ -12,7 +12,7 @@ pub async fn get_response_body<B: MessageBody + std::fmt::Debug>(
     srv: &impl Service<Request, Response = ServiceResponse<B>, Error = actix_web::Error>,
 ) -> String {
     let res = test::call_service(srv, req).await;
-    assert!(res.status().is_success());
+    assert!(res.status().is_success(), "{:?}", res.response());
     let body = res.into_body().try_into_bytes().unwrap();
     std::str::from_utf8(&body).unwrap().to_string()
 }
