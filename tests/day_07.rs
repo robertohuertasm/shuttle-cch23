@@ -1,13 +1,14 @@
 mod common;
 
-use std::collections::HashMap;
-
 use actix_web::{
     test::{self, TestRequest},
     App,
 };
 use cch23_robertohuertasm::app::{configure_app, CookieResponse};
-use common::{assert_request, assert_request_get, get_response_body};
+use common::{
+    assert_content_type, assert_request, assert_request_get, get_response_body, ContentType,
+};
+use std::collections::HashMap;
 
 #[actix_web::test]
 async fn integration_day_07_decode_with_cookie_works() {
@@ -33,6 +34,21 @@ async fn integration_day_07_decode_without_cookie_works() {
     let service = test::init_service(app).await;
     let expected = "No Cookie";
     assert_request_get(&service, "/7/decode", expected).await;
+}
+
+#[actix_web::test]
+async fn integration_day_07_decode_returns_plain_text_value() {
+    let app = App::new().configure(configure_app);
+    let service = test::init_service(app).await;
+
+    let req = TestRequest::get()
+        .uri("/7/decode")
+        .insert_header((
+            "Cookie",
+            "recipe=eyJmbG91ciI6MTAwLCJjaG9jb2xhdGUgY2hpcHMiOjIwfQ==",
+        ))
+        .to_request();
+    assert_content_type(req, &service, ContentType::PlainText).await;
 }
 
 #[actix_web::test]
@@ -104,4 +120,20 @@ async fn integration_day_07_bake_with_cookie_and_random_items_works() {
     let response_cookie = serde_json::from_str::<CookieResponse>(&response_body).unwrap();
 
     assert_eq!(response_cookie, expected);
+}
+
+#[actix_web::test]
+async fn integration_day_07_decode_returns_json_value() {
+    let app = App::new().configure(configure_app);
+    let service = test::init_service(app).await;
+
+    let req = TestRequest::get()
+        .uri("/7/bake")
+        .insert_header((
+            "Cookie",
+            "recipe=eyJyZWNpcGUiOnsic2xpbWUiOjl9LCJwYW50cnkiOnsiY29iYmxlc3RvbmUiOjY0LCJzdGljayI6IDR9fQ==",
+        ))
+        .to_request();
+
+    assert_content_type(req, &service, ContentType::Json).await;
 }

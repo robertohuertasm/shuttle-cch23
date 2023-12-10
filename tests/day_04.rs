@@ -1,8 +1,12 @@
 mod common;
 
-use actix_web::{test, App};
+use actix_web::{
+    test::{self, TestRequest},
+    App,
+};
 use cch23_robertohuertasm::app::{configure_app, ContestResult, Reinder};
-use common::assert_request_post;
+use common::{assert_content_type, assert_request_post, ContentType};
+use std::vec;
 
 fn simple_reinder(name: String, strength: u32) -> Reinder {
     Reinder {
@@ -18,7 +22,7 @@ fn simple_reinder(name: String, strength: u32) -> Reinder {
 }
 
 #[actix_web::test]
-async fn strength_works() {
+async fn integration_day_04_strength_works() {
     let app = App::new().configure(configure_app);
     let service = test::init_service(app).await;
 
@@ -30,6 +34,25 @@ async fn strength_works() {
     ];
 
     assert_request_post(&service, "/4/strength", reinders, "22").await;
+}
+
+#[actix_web::test]
+async fn integration_day_04_strength_returns_plain_text_value() {
+    let app = App::new().configure(configure_app);
+    let service = test::init_service(app).await;
+
+    let input = vec![
+        simple_reinder("Dasher".to_string(), 5),
+        simple_reinder("Dancer".to_string(), 6),
+        simple_reinder("Prancer".to_string(), 4),
+        simple_reinder("Vixen".to_string(), 7),
+    ];
+
+    let req = TestRequest::post()
+        .uri("/4/strength")
+        .set_json(input)
+        .to_request();
+    assert_content_type(req, &service, ContentType::PlainText).await;
 }
 
 #[actix_web::test]
@@ -70,4 +93,22 @@ async fn integration_day_04_contest_works() {
     let expected = serde_json::to_string(&expected_result).unwrap();
 
     assert_request_post(&service, "/4/contest", reinders, expected.as_str()).await;
+}
+
+#[actix_web::test]
+async fn integration_day_04_contest_returns_plain_text_value() {
+    let app = App::new().configure(configure_app);
+    let service = test::init_service(app).await;
+
+    let input = vec![
+        simple_reinder("Dasher".to_string(), 5),
+        simple_reinder("Dancer".to_string(), 6),
+    ];
+
+    let req = TestRequest::post()
+        .uri("/4/contest")
+        .set_json(input)
+        .to_request();
+
+    assert_content_type(req, &service, ContentType::Json).await;
 }

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use actix_http::{body::MessageBody, Request};
+use actix_http::{body::MessageBody, header::CONTENT_TYPE, Request};
 use actix_web::{
     dev::{Service, ServiceResponse},
     test::{self, TestRequest},
@@ -43,4 +43,38 @@ pub async fn assert_request_post<B: MessageBody + std::fmt::Debug, T: Serialize>
 ) {
     let req = TestRequest::post().uri(path).set_json(payload).to_request();
     assert_request(req, srv, expected).await;
+}
+
+pub enum ContentType {
+    PlainText,
+    Json,
+}
+
+impl ContentType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            ContentType::PlainText => "text/plain; charset=utf-8",
+            ContentType::Json => "application/json",
+        }
+    }
+}
+
+pub async fn assert_content_type<B: MessageBody + std::fmt::Debug>(
+    req: Request,
+    srv: &impl Service<Request, Response = ServiceResponse<B>, Error = actix_web::Error>,
+    expected: ContentType,
+) {
+    let res = test::call_service(srv, req).await;
+    let content_type = res.headers().get(CONTENT_TYPE);
+    assert_eq!(content_type.unwrap(), expected.as_str());
+}
+
+pub async fn assert_content_type_raw<B: MessageBody + std::fmt::Debug>(
+    req: Request,
+    srv: &impl Service<Request, Response = ServiceResponse<B>, Error = actix_web::Error>,
+    expected: &str,
+) {
+    let res = test::call_service(srv, req).await;
+    let content_type = res.headers().get(CONTENT_TYPE);
+    assert_eq!(content_type.unwrap(), expected);
 }
