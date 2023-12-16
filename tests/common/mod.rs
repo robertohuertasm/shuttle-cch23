@@ -45,6 +45,24 @@ pub async fn assert_request_post<B: MessageBody + std::fmt::Debug, T: Serialize>
     assert_request(req, srv, expected).await;
 }
 
+pub async fn assert_request_post_direct_payload<B: MessageBody + std::fmt::Debug>(
+    srv: &impl Service<Request, Response = ServiceResponse<B>, Error = actix_web::Error>,
+    path: &str,
+    payload: String,
+    expected: &str,
+) {
+    let req = TestRequest::post()
+        .uri(path)
+        .set_payload(payload)
+        .insert_header((
+            actix_web::http::header::CONTENT_TYPE,
+            ContentType::Json.as_str(),
+        ))
+        .to_request();
+
+    assert_request(req, srv, expected).await;
+}
+
 pub enum ContentType {
     PlainText,
     Json,

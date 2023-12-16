@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use actix_web::{web::Json, HttpRequest};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 const NO_COOKIE: &str = "No Cookie";
 
@@ -16,14 +15,14 @@ pub async fn decode(req: HttpRequest) -> String {
 
 #[derive(Debug, Default, Deserialize, Serialize)]
 struct CookieData {
-    recipe: HashMap<String, u32>,
-    pantry: HashMap<String, u32>,
+    recipe: HashMap<String, i64>,
+    pantry: HashMap<String, i64>,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
 pub struct CookieResponse {
-    pub cookies: u32,
-    pub pantry: HashMap<String, u32>,
+    pub cookies: i64,
+    pub pantry: HashMap<String, i64>,
 }
 
 pub async fn bake(req: HttpRequest) -> Json<CookieResponse> {
@@ -35,19 +34,19 @@ pub async fn bake(req: HttpRequest) -> Json<CookieResponse> {
 async fn bake_impl(cookie: &str) -> CookieResponse {
     if let Ok(cookie_data) = serde_json::from_str::<CookieData>(cookie) {
         // max number of cookies that we can bake
-        let cookies =
-            cookie_data
-                .recipe
-                .iter()
-                .enumerate()
-                .fold(0, |acc, (i, (ingredient, amount))| {
-                    let pantry_amount = cookie_data.pantry.get(ingredient).unwrap_or(&0);
-                    let cookie_quantity = pantry_amount / amount;
-                    if i == 0 {
-                        return cookie_quantity;
-                    }
-                    u32::min(acc, cookie_quantity)
-                });
+        let cookies = cookie_data
+            .recipe
+            .iter()
+            .filter(|(_, &amount)| amount > 0)
+            .enumerate()
+            .fold(0, |acc, (i, (ingredient, amount))| {
+                let pantry_amount = *cookie_data.pantry.get(ingredient).unwrap_or(&0);
+                let cookie_quantity = pantry_amount.checked_div(*amount).unwrap_or(0);
+                if i == 0 {
+                    return cookie_quantity;
+                }
+                i64::min(acc, cookie_quantity)
+            });
 
         // updated pantry
         let pantry =
@@ -82,6 +81,28 @@ async fn decode_impl(cookie: &str) -> String {
 mod tests {
 
     use super::*;
+
+    #[actix_web::test]
+    async fn bake_impl_works_with_0_values() {
+        // {"recipe":{"cocoa bean":1,"chicken":0},"pantry":{"cocoa bean":5,"corn":5,"cucumber":0}}
+        let cookie_value = "eyJyZWNpcGUiOnsiY29jb2EgYmVhbiI6MSwiY2hpY2tlbiI6MH0sInBhbnRyeSI6eyJjb2NvYSBiZWFuIjo1LCJjb3JuIjo1LCJjdWN1bWJlciI6MH19";
+
+        let cookie_value = decode_impl(cookie_value).await;
+        let result = bake_impl(&cookie_value).await;
+
+        // {"cookies":5,"pantry":{"cocoa beam":0,"corn":5,"cucumber":0}
+        let expected = CookieResponse {
+            cookies: 5,
+            pantry: {
+                let mut map = HashMap::new();
+                map.insert("cocoa beam".to_string(), 0);
+                map.insert("corn".to_string(), 5);
+                map.insert("cucumber".to_string(), 0);
+                map
+            },
+        };
+        assert_eq!(result, expected);
+    }
 
     #[actix_web::test]
     async fn decode_impl_works() {

@@ -11,12 +11,17 @@ struct MiniReinder {
 pub struct Reinder {
     pub name: String,
     pub strength: u32,
+    #[serde(default)]
     pub speed: f32,
+    #[serde(default)]
     pub height: u32,
+    #[serde(default)]
     pub antler_width: u32,
+    #[serde(default)]
     pub snow_magic_power: u32,
+    #[serde(default)]
     pub favorite_food: String,
-    #[serde(rename = "cAnD13s_3ATeN-yesT3rdAy")]
+    #[serde(rename = "cAnD13s_3ATeN-yesT3rdAy", default)]
     pub candies_eaten_yesterday: u32,
 }
 
@@ -60,7 +65,6 @@ impl Responder for ContestResult {
 }
 
 pub async fn strength(reinders: Json<Vec<Reinder>>) -> String {
-    println!("reinders {}", reinders.len());
     reinders.iter().map(|r| r.strength).sum::<u32>().to_string()
 }
 

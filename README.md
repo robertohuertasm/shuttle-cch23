@@ -6,16 +6,16 @@
 
 In order to validate the solution we can use the [cch23-validator crate](https://crates.io/crates/cch23-validator).
 
-| | Solution 1 | Solution 2 |
-| --- | :---: | :---: |
-| - 1 | ✅ | ✅ |
-| 01 | ✅ | ✅ |
-| 04 | ❌ | ❌ |
-| 06 | ✅ | ❌ |
-| 07 | ✅ | ❌ |
-| 08 | ✅ | ✅ |
-| 11 |  |  |
-| 12 |  |  |
-| 13 |  |  |
-| 14 |  |  |
-| 15 |  |  |
+| | Solution 1 | Solution 2 | Solution 3 |
+| --- | :---: | :---: | :---: |
+| - 1 | ✅ | ✅ |  |
+| 01 | ✅ | ✅ |  |
+| 04 | ✅ | ✅ |  |
+| 06 | ✅ | ✅ |  |
+| 07 | ✅ | ✅ | ✅ |
+| 08 | ✅ | ✅ |  |
+| 11 |  |  |  |
+| 12 |  |  |  |
+| 13 |  |  |  |
+| 14 |  |  |  |
+| 15 |  |  |  |

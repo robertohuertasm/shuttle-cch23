@@ -5,7 +5,9 @@ use actix_web::{
     App,
 };
 use cch23_robertohuertasm::app::{configure_app, ContestResult, Reinder};
-use common::{assert_content_type, assert_request_post, ContentType};
+use common::{
+    assert_content_type, assert_request_post, assert_request_post_direct_payload, ContentType,
+};
 use std::vec;
 
 fn simple_reinder(name: String, strength: u32) -> Reinder {
@@ -34,6 +36,34 @@ async fn integration_day_04_strength_works() {
     ];
 
     assert_request_post(&service, "/4/strength", reinders, "22").await;
+}
+
+#[actix_web::test]
+async fn integration_day_04_strength_works_2() {
+    let app = App::new().configure(configure_app);
+    let service = test::init_service(app).await;
+
+    let reinders = r#"[
+     {
+        "name": "Dasher",
+        "strength": 5
+      },
+      {
+        "name": "Dancer",
+        "strength": 6
+      },
+      {
+        "name": "Prancer",
+        "strength": 4
+      },
+      {
+        "name": "Vixen",
+        "strength": 7
+      }
+   ]"#
+    .to_string();
+
+    assert_request_post_direct_payload(&service, "/4/strength", reinders, "22").await;
 }
 
 #[actix_web::test]

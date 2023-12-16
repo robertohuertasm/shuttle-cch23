@@ -20,7 +20,14 @@ impl Responder for Day06Result {
 
 pub async fn day_06(input: String) -> Day06Result {
     let elf = input.matches("elf").count() as u32;
-    let elf_on_a_shelf = input.matches("elf on a shelf").count() as u32;
+
+    let on_a_shelf = "elf on a shelf".as_bytes();
+
+    let elf_on_a_shelf = input
+        .as_bytes()
+        .windows(on_a_shelf.len())
+        .filter(|x| x == &on_a_shelf)
+        .count() as u32;
     let shelf_with_no_elf_on_it = input.matches("shelf").count() as u32 - elf_on_a_shelf;
 
     Day06Result {
@@ -66,6 +73,21 @@ mod tests {
                 elf: 4,
                 elf_on_a_shelf: 0,
                 shelf_with_no_elf_on_it: 1
+            }
+        );
+    }
+
+    #[actix_web::test]
+    async fn it_works_3() {
+        let input = "In Belfast I heard an elf on a shelf on a shelf on a ".to_string();
+
+        let result = day_06(input).await;
+        assert_eq!(
+            result,
+            Day06Result {
+                elf: 4,
+                elf_on_a_shelf: 2,
+                shelf_with_no_elf_on_it: 0
             }
         );
     }
