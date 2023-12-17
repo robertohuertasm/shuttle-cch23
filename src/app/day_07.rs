@@ -95,7 +95,7 @@ mod tests {
             cookies: 5,
             pantry: {
                 let mut map = HashMap::new();
-                map.insert("cocoa beam".to_string(), 0);
+                map.insert("cocoa bean".to_string(), 0);
                 map.insert("corn".to_string(), 5);
                 map.insert("cucumber".to_string(), 0);
                 map

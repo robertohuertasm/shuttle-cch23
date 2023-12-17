@@ -14,7 +14,7 @@ In order to validate the solution we can use the [cch23-validator crate](https:/
 | 06 | ✅ | ✅ |  |
 | 07 | ✅ | ✅ | ✅ |
 | 08 | ✅ | ✅ |  |
-| 11 |  |  |  |
+| 11 | ✅ | ✅ |  |
 | 12 |  |  |  |
 | 13 |  |  |  |
 | 14 |  |  |  |

@@ -1,6 +1,10 @@
 #![allow(dead_code)]
 
-use actix_http::{body::MessageBody, header::CONTENT_TYPE, Request};
+use actix_http::{
+    body::MessageBody,
+    header::{HeaderName, HeaderValue, CONTENT_TYPE},
+    Request,
+};
 use actix_web::{
     dev::{Service, ServiceResponse},
     test::{self, TestRequest},
@@ -95,4 +99,26 @@ pub async fn assert_content_type_raw<B: MessageBody + std::fmt::Debug>(
     let res = test::call_service(srv, req).await;
     let content_type = res.headers().get(CONTENT_TYPE);
     assert_eq!(content_type.unwrap(), expected);
+}
+
+pub fn build_multipart_payload_and_header(
+    file_name: &str,
+    file_contents: &str,
+    name: &str,
+    content_type: &str,
+) -> (String, (HeaderName, HeaderValue)) {
+    let boundary = "-----------------------------202022185716362916172375148227";
+    let payload = format!(
+        "{boundary}\r\n\
+Content-Disposition: form-data; name=\"{name}\"; filename=\"{file_name}\"\r\n\
+Content-Type: {content_type}\r\n\
+\r\n\r\n\
+{file_contents}\r\n\r\n\
+{boundary}--"
+    );
+    let header = (
+        actix_web::http::header::CONTENT_TYPE,
+        HeaderValue::from_static("multipart/form-data; boundary=---------------------------202022185716362916172375148227"),
+    );
+    (payload, header)
 }
